@@ -26,7 +26,6 @@
       <button class="btn btn-orange" id="trackOrderBtn">➤ Track Your Order</button>
       <a class="btn btn-orange" id="headerWhatsapp" href="https://wa.me/8801690090084" target="_blank" rel="noopener">📞 <span id="headerPhone">01690090084</span></a>
       <button class="btn btn-orange cart-btn" id="cartBtn">🛒 <span class="cart-count" id="cartCount">0</span></button>
-      <button class="btn btn-dark" id="adminBtn">⚙️ Admin Panel</button>
     </div>
   </div>
 
@@ -91,85 +90,12 @@
       </div>
     </div>
   </section>
-
-  <!-- ======================= ADMIN ======================= -->
-  <section id="adminView" hidden>
-    <div class="admin-head">
-      <h2>⚙️ Admin Panel <span class="live-dot">● Firebase Live</span></h2>
-      <button class="btn btn-orange" id="viewStoreBtn">🛍️ ওয়েবসাইট দেখুন</button>
-    </div>
-
-    <div class="admin-stats">
-      <div class="stat"><span>📦 মোট প্রোডাক্ট</span><strong id="statProducts">0</strong></div>
-      <div class="stat"><span>🧾 মোট অর্ডার</span><strong id="statOrders">0</strong></div>
-      <div class="stat"><span>💰 মোট সেলস</span><strong id="statSales">৳0</strong></div>
-      <div class="stat"><span>⚠️ দাম সেট হয়নি</span><strong id="statNoPrice">0</strong></div>
-    </div>
-    <p class="admin-note" id="noPriceNote" hidden></p>
-
-    <div class="admin-tabs">
-      <button class="tab active" data-tab="products">📦 Products</button>
-      <button class="tab" data-tab="categories">📂 Categories</button>
-      <button class="tab" data-tab="orders">🧾 Orders</button>
-      <button class="tab" data-tab="payment">💳 Payment</button>
-    </div>
-
-    <!-- Products tab -->
-    <div class="tab-panel" id="tab-products">
-      <div class="tab-head">
-        <input type="search" id="adminSearch" placeholder="প্রোডাক্ট খুঁজুন...">
-        <button class="btn btn-orange" id="newProductBtn">＋ নতুন প্রোডাক্ট</button>
-      </div>
-      <table class="admin-table">
-        <thead>
-          <tr><th>প্রোডাক্ট</th><th>ক্যাটাগরি</th><th>দাম (৳)</th><th>স্টক</th><th>সাইজ</th><th>স্ট্যাটাস</th><th></th></tr>
-        </thead>
-        <tbody id="adminProductRows"></tbody>
-      </table>
-    </div>
-
-    <!-- Categories tab -->
-    <div class="tab-panel" id="tab-categories" hidden>
-      <div class="tab-head">
-        <input type="text" id="newCategoryName" placeholder="নতুন ক্যাটাগরির নাম...">
-        <button class="btn btn-orange" id="addCategoryBtn">＋ ক্যাটাগরি যোগ করুন</button>
-      </div>
-      <ul class="category-admin-list" id="adminCategoryList"></ul>
-    </div>
-
-    <!-- Orders tab -->
-    <div class="tab-panel" id="tab-orders" hidden>
-      <div id="adminOrderList"></div>
-      <p class="empty-note" id="ordersEmpty" hidden>এখনো কোনো অর্ডার আসেনি।</p>
-    </div>
-
-    <!-- Payment tab -->
-    <div class="tab-panel" id="tab-payment" hidden>
-      <form id="paymentForm" class="payment-form">
-        <h3>পেমেন্ট মেথড</h3>
-        <label class="check"><input type="checkbox" id="codEnabled"> Cash on Delivery (COD)</label>
-        <label class="check"><input type="checkbox" id="bkashEnabled"> bKash <input type="text" id="bkashNumber" placeholder="bKash number"></label>
-        <label class="check"><input type="checkbox" id="nagadEnabled"> Nagad <input type="text" id="nagadNumber" placeholder="Nagad number"></label>
-        <label class="check"><input type="checkbox" id="rocketEnabled"> Rocket <input type="text" id="rocketNumber" placeholder="Rocket number"></label>
-
-        <h3>ডেলিভারি চার্জ (৳)</h3>
-        <label>ঢাকার ভিতরে <input type="number" id="deliveryInside" min="0"></label>
-        <label>ঢাকার বাইরে <input type="number" id="deliveryOutside" min="0"></label>
-
-        <h3>যোগাযোগ</h3>
-        <label>WhatsApp নম্বর <input type="text" id="whatsappNumber" placeholder="01XXXXXXXXX"></label>
-        <label>Announcement <input type="text" id="announcementText" placeholder="উপরে দেখানোর বার্তা (খালি রাখলে দেখাবে না)"></label>
-
-        <button type="submit" class="btn btn-orange btn-lg">💾 সেভ করুন</button>
-        <p class="form-msg" id="paymentMsg"></p>
-      </form>
-    </div>
-  </section>
 </main>
 
 <footer class="site-footer">
   <p><strong>TAQDEER HOUSE</strong> — Winter Collection 2026–27</p>
   <p>WhatsApp: <a href="https://wa.me/8801690090084" target="_blank" rel="noopener">01690090084</a> • Cash on Delivery সারা দেশে</p>
+  <p><a href="admin.html">⚙️ Admin</a></p>
 </footer>
 
 <!-- ======================= PRODUCT MODAL ======================= -->
@@ -239,33 +165,7 @@
   </div>
 </div>
 
-<!-- ======================= PRODUCT EDIT MODAL (ADMIN) ======================= -->
-<div class="modal" id="editModal" hidden>
-  <div class="modal-card">
-    <button class="modal-close" data-close="editModal">✕</button>
-    <div class="modal-body">
-      <h3 id="editTitle">প্রোডাক্ট এডিট করুন</h3>
-      <form id="editForm">
-        <input type="hidden" id="editId">
-        <label>প্রোডাক্টের ছবির URL <input type="url" id="editImage" placeholder="https://... (খালি রাখলে placeholder দেখাবে)"></label>
-        <label>প্রোডাক্টের নাম * <input type="text" id="editName" required></label>
-        <label>ক্যাটাগরি * <select id="editCategory" required></select></label>
-        <label>দাম (৳) <input type="number" id="editPrice" min="0" placeholder="খালি রাখলে WhatsApp এ দাম জানতে হবে"></label>
-        <label>আগের দাম (৳) <input type="number" id="editOldPrice" min="0" placeholder="ঐচ্ছিক"></label>
-        <label>স্টক (টি) * <input type="number" id="editStock" min="0" required></label>
-        <label>কালার (কমা দিয়ে আলাদা করুন) <input type="text" id="editColors" placeholder="Blue/White, Pink/White"></label>
-        <label>সাইজ (কমা দিয়ে আলাদা করুন) <input type="text" id="editSizes" placeholder="M, L, XL"></label>
-        <label>বিবরণ <textarea id="editDesc" rows="4"></textarea></label>
-        <label class="check"><input type="checkbox" id="editBest"> Best Selling</label>
-        <label class="check"><input type="checkbox" id="editFlash"> Flash Sale</label>
-        <label class="check"><input type="checkbox" id="editActive"> ওয়েবসাইটে দেখাবে</label>
-        <p class="form-msg" id="editMsg"></p>
-        <button type="submit" class="btn btn-orange btn-lg btn-block">আপডেট করুন</button>
-      </form>
-    </div>
-  </div>
-</div>
-
-<script src="js/app.js"></script>
+<script src="js/common.js"></script>
+<script src="js/store.js"></script>
 </body>
 </html>
