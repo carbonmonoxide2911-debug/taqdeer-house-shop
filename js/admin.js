@@ -8,6 +8,9 @@
 
 const UNLOCK_KEY = 'th_admin_unlocked';
 let unlocked = false;
+const ADMIN_PAGE_SIZE = 10;   // admin product table: 10 per page
+let adminPage = 1;
+let lastAdminSearch = '\u0000'; // sentinel so the first render starts on page 1
 
 /* ============================== PIN gate =================================== */
 async function tryUnlock(pin) {
@@ -82,10 +85,19 @@ function renderAdmin() {
   fillPaymentForm();
 }
 
+function goAdminPage(n) {
+  adminPage = n;
+  renderAdminProducts();
+}
 function renderAdminProducts() {
   const q = ($('adminSearch').value || '').toLowerCase();
+  // A new search resets to page 1; the 5-second live refresh keeps the page.
+  if (q !== lastAdminSearch) { adminPage = 1; lastAdminSearch = q; }
   const rows = state.products.filter((p) => !q || p.name.toLowerCase().includes(q));
-  $('adminProductRows').innerHTML = rows.map((p) =>
+  const totalPages = Math.max(1, Math.ceil(rows.length / ADMIN_PAGE_SIZE));
+  if (adminPage > totalPages) adminPage = totalPages;
+  const pageRows = rows.slice((adminPage - 1) * ADMIN_PAGE_SIZE, adminPage * ADMIN_PAGE_SIZE);
+  $('adminProductRows').innerHTML = pageRows.map((p) =>
     '<tr><td><strong>' + esc(p.name) + '</strong><br><span class="muted">' + esc(p.category) + '</span></td>' +
     '<td>' + esc(p.category) + '</td>' +
     '<td><input type="number" min="0" value="' + (p.price ?? '') + '" placeholder="—" onchange="quickPrice(\'' + p.id + '\', this.value)"></td>' +
@@ -97,6 +109,7 @@ function renderAdminProducts() {
       '<button class="btn btn-sm btn-danger" onclick="deleteProduct(\'' + p.id + '\', \'' + esc(p.name.replace(/'/g, '')) + '\')">🗑️</button>' +
     '</div></td></tr>').join('') ||
     '<tr><td colspan="7" class="empty-note">কোনো প্রোডাক্ট পাওয়া যায়নি।</td></tr>';
+  $('adminPagination').innerHTML = paginationHtml(adminPage, totalPages, rows.length, 'goAdminPage');
 }
 
 async function quickPrice(id, v) {

@@ -4,8 +4,18 @@
    ========================================================================== */
 
 const storeFilter = { category: 'All', search: '', best: false, flash: false, inStock: false };
+const STORE_PAGE_SIZE = 12;   // ALL PRODUCTS grid: 12 per page (50+ products stay fast)
+const MINI_GRID_MAX = 8;      // Best Selling / Flash Sale grids cap at 8 items
+let storePage = 1;
+let lastFilterSig = '';
 let cart = [];
 let checkoutItems = [];
+
+function goStorePage(n) {
+  storePage = n;
+  renderStorefront();
+  document.getElementById('allProductsSection').scrollIntoView({ behavior: 'smooth' });
+}
 
 async function loadAll() {
   try {
@@ -72,17 +82,30 @@ function renderStorefront() {
     '<li><button class="' + (storeFilter.category === c ? 'active' : '') + '" onclick="setCategory(\'' + esc(c) + '\')">' +
     esc(c === 'All' ? 'সব প্রোডাক্ট' : c) + ' <span class="count">(' + (c === 'All' ? state.products.filter((p) => p.isActive).length : (counts[c] || 0)) + ')</span></button></li>').join('');
 
-  // Grids
+  // Grids — ALL PRODUCTS is paginated (12 per page); a filter/search change
+  // resets to page 1, while the 5-second live refresh keeps the current page.
   const list = visibleProducts();
+  const filterSig = JSON.stringify(storeFilter);
+  if (filterSig !== lastFilterSig) { storePage = 1; lastFilterSig = filterSig; }
+  const totalPages = Math.max(1, Math.ceil(list.length / STORE_PAGE_SIZE));
+  if (storePage > totalPages) storePage = totalPages;
+  const pageItems = list.slice((storePage - 1) * STORE_PAGE_SIZE, storePage * STORE_PAGE_SIZE);
   $('gridTitle').textContent = storeFilter.category === 'All' ? 'ALL PRODUCTS' : storeFilter.category.toUpperCase();
   $('productCount').textContent = list.length + ' টি প্রোডাক্ট';
-  $('productGrid').innerHTML = list.map(productCard).join('');
+  $('productGrid').innerHTML = pageItems.map(productCard).join('');
   $('gridEmpty').hidden = list.length > 0;
+  $('storePagination').innerHTML = paginationHtml(storePage, totalPages, list.length, 'goStorePage');
 
   const best = state.products.filter((p) => p.isActive && p.isBestSeller);
-  $('bestGrid').innerHTML = best.length ? best.map(productCard).join('') : '<p class="empty-note">এখনো কোনো Best Selling প্রোডাক্ট নেই।</p>';
+  $('bestGrid').innerHTML = best.length
+    ? best.slice(0, MINI_GRID_MAX).map(productCard).join('') +
+      (best.length > MINI_GRID_MAX ? '<p class="empty-note">আরও ' + (best.length - MINI_GRID_MAX) + ' টি Best Selling প্রোডাক্ট আছে — উপরে ALL PRODUCTS থেকে দেখুন।</p>' : '')
+    : '<p class="empty-note">এখনো কোনো Best Selling প্রোডাক্ট নেই।</p>';
   const flash = state.products.filter((p) => p.isActive && p.isFlashSale);
-  $('flashGrid').innerHTML = flash.length ? flash.map(productCard).join('') : '<p class="empty-note">এখনো কোনো Flash Sale প্রোডাক্ট নেই।</p>';
+  $('flashGrid').innerHTML = flash.length
+    ? flash.slice(0, MINI_GRID_MAX).map(productCard).join('') +
+      (flash.length > MINI_GRID_MAX ? '<p class="empty-note">আরও ' + (flash.length - MINI_GRID_MAX) + ' টি Flash Sale প্রোডাক্ট আছে — উপরে ALL PRODUCTS থেকে দেখুন।</p>' : '')
+    : '<p class="empty-note">এখনো কোনো Flash Sale প্রোডাক্ট নেই।</p>';
 
   // Announcement + header phone
   const ann = state.settings.announcement || '';

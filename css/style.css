@@ -257,6 +257,21 @@ main { max-width: 1280px; margin: 0 auto; padding: 0 16px 40px; }
   text-align: center; font-size: 22px; letter-spacing: 8px; font-weight: 700;
 }
 
+/* ---------- Pagination ---------- */
+.pagination {
+  display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+  justify-content: center; margin: 18px 0 8px;
+}
+.pagination .muted { margin-left: 8px; }
+.page-btn {
+  min-width: 36px; padding: 8px 12px; border: 1px solid var(--border);
+  border-radius: 8px; background: #fff; font-weight: 700; cursor: pointer;
+}
+.page-btn:hover:not(:disabled) { border-color: var(--orange); color: var(--orange); }
+.page-btn.active { background: var(--orange); border-color: var(--orange); color: #fff; }
+.page-btn:disabled { opacity: .45; cursor: not-allowed; }
+.page-dots { padding: 0 2px; color: #888; }
+
 @media (max-width: 820px) {
   .shop-layout { grid-template-columns: 1fr; }
   .sidebar { position: static; }

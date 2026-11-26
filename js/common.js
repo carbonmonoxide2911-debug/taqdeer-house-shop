@@ -16,7 +16,7 @@ const DEFAULT_ADMIN_PIN = '1234';                // initial admin PIN (changeabl
 const SEED_SETTINGS = {
   announcement: '', codEnabled: true, bkashEnabled: false, bkashNumber: '',
   nagadEnabled: false, nagadNumber: '', rocketEnabled: false, rocketNumber: '',
-  deliveryInsideDhaka: 60, deliveryOutsideDhaka: 120,
+  deliveryInsideDhaka: 80, deliveryOutsideDhaka: 150,
   whatsappNumber: WHATSAPP_DISPLAY,
   adminPin: DEFAULT_ADMIN_PIN
 };
@@ -176,6 +176,27 @@ function formatOrderText(o) {
     lines.push('Total: WhatsApp এ কনফার্ম করা হবে');
   }
   return lines.join('\n');
+}
+
+/* ============================== Pagination (shared) ======================== */
+function pageWindow(current, total) {
+  // Compact page list: all pages when few, otherwise 1 … c-1 c c+1 … last
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  const pages = [1];
+  if (current > 3) pages.push('…');
+  for (let p = Math.max(2, current - 1); p <= Math.min(total - 1, current + 1); p++) pages.push(p);
+  if (current < total - 2) pages.push('…');
+  pages.push(total);
+  return pages;
+}
+function paginationHtml(current, total, totalItems, goFn) {
+  if (total <= 1) return '<span class="muted">মোট ' + totalItems + ' টি প্রোডাক্ট</span>';
+  return '<button class="page-btn" ' + (current <= 1 ? 'disabled' : '') + ' onclick="' + goFn + '(' + (current - 1) + ')">← আগের</button>' +
+    pageWindow(current, total).map((p) => p === '…'
+      ? '<span class="page-dots">…</span>'
+      : '<button class="page-btn' + (p === current ? ' active' : '') + '" onclick="' + goFn + '(' + p + ')">' + p + '</button>').join('') +
+    '<button class="page-btn" ' + (current >= total ? 'disabled' : '') + ' onclick="' + goFn + '(' + (current + 1) + ')">পরের →</button>' +
+    '<span class="muted">পৃষ্ঠা ' + current + ' / ' + total + ' • মোট ' + totalItems + ' টি</span>';
 }
 
 /* ============================== Modals ===================================== */
